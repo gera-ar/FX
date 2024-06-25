@@ -128,7 +128,7 @@ class MyFrame(wx.Frame):
 				file= f'fondos/{self.fondos_files[self.fondos_listbox.GetSelection()]}'
 			elif widget == 'efectos':
 				file= f'efectos/{self.efectos_files[self.efectos_listbox.GetSelection()]}'
-			self.process= subprocess.Popen([ffplay, '-nodisp', file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+			self.process= subprocess.Popen([ffplay, '-nodisp', file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, creationflags=subprocess.CREATE_NO_WINDOW)
 			self.is_playing = True
 			speak('Preview activada')
 		else:
