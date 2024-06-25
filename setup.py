@@ -4,6 +4,8 @@ import pygame._sdl2.audio as sdl2_audio
 import os
 import wx
 from time import sleep
+import subprocess
+import threading
 
 mixer.init()
 devices= sdl2_audio.get_audio_device_names()
@@ -12,6 +14,7 @@ devices= sdl2_audio.get_audio_device_names()
 nvda= ctypes.WinDLL('_internal/nvda64.dll')
 app_name= 'FX'
 supported_files= ['.aiff', '.wav', '.ogg', '.mp3', '.flac']
+ffplay= '_internal/ffplay.exe'
 
 def speak(string):
 	wstr= ctypes.c_wchar_p(string)
@@ -26,6 +29,9 @@ class MyFrame(wx.Frame):
 		
 		self.fondos_files= []
 		self.efectos_files= []
+		
+		self.process = None
+		self.is_playing = False
 		
 		panel= wx.Panel(self)
 		
@@ -111,8 +117,26 @@ class MyFrame(wx.Frame):
 			self.time()
 		elif key == 79:
 			AudioDevice().Show()
+		elif key == 80:
+			self.preview(widget)
 		else:
 			event.Skip()
+
+	def preview(self, widget):
+		if not self.is_playing:
+			if widget == 'fondos':
+				file= f'fondos/{self.fondos_files[self.fondos_listbox.GetSelection()]}'
+			elif widget == 'efectos':
+				file= f'efectos/{self.efectos_files[self.efectos_listbox.GetSelection()]}'
+			self.process= subprocess.Popen([ffplay, '-nodisp', file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+			self.is_playing = True
+			speak('Preview activada')
+		else:
+			self.process.terminate()
+			self.process.wait()
+			self.is_playing = False
+			speak('Preview desactivada')
+
 
 	def play(self, widget, select):
 		if widget == 'fondos' and select != wx.NOT_FOUND:
