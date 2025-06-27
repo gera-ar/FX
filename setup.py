@@ -1,10 +1,13 @@
 ﻿import wx
 from pygame import mixer
+import pygame._sdl2.audio as sdl2_audio
 import os
 import ctypes
+import subprocess
 
 # constantes
-nvda= ctypes.WinDLL('_internal/nvda64.dll')
+nvda = ctypes.WinDLL('_internal/nvda64.dll')
+ffplay = '_internal/ffplay.exe'
 
 def speak(string):
 	wstr= ctypes.c_wchar_p(string)
@@ -12,6 +15,7 @@ def speak(string):
 
 # Inicializar Pygame
 mixer.init()
+devices= sdl2_audio.get_audio_device_names()
 
 class MyApp(wx.App):
     def OnInit(self):
@@ -30,7 +34,6 @@ class MyFrame(wx.Frame):
         self.channels = []
         self.audio_files = []
         self.sounds = []
-        self.load_audio_files('audios')
         self.volumes = {
             0.0: 'silencio',
             0.1: '10 porciento',
@@ -44,6 +47,10 @@ class MyFrame(wx.Frame):
             0.9: '90 porciento',
             1.0: 'máximo'
         }
+        self.process = None
+        self.is_playing = False
+        self.ext = None
+        self.load_audio_files('audios')
         
         # Añadir ListBox a la ventana
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -61,9 +68,15 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.close)
 
     def load_audio_files(self, folder):
+        if not os.path.exists('audios'):
+            os.makedirs('audios', exist_ok= True)
+        
         self.listbox.Clear()
         self.sounds.clear()
+        
         for filename in os.listdir(folder):
+            if not self.ext:
+                self.ext = '.mp3' if filename.endswith('.mp3') else '.wav'
             if filename.endswith('.mp3') or filename.endswith('.wav'):
                 name, _ = os.path.splitext(filename)
                 self.listbox.Append(name)
@@ -77,16 +90,31 @@ class MyFrame(wx.Frame):
             self.playStop(sound_obj, flag)
         if event.GetKeyCode() in (wx.WXK_F1, wx.WXK_F2, wx.WXK_F3, wx.WXK_F4):
             self.fade(event.GetKeyCode(), sound_obj)
+        elif event.GetKeyCode() == wx.WXK_F5:
+            speak('Refrescando el contenido')
+            self.load_audio_files('audios')
         elif event.GetKeyCode() == 65:    # letra a
             self.currentVolume(sound_obj)
         elif event.GetKeyCode() == 66:    # letra b
             self.volumeDown(sound_obj)
         elif event.GetKeyCode() == 83:    # letra s
             self.volumeUp(sound_obj)
+        elif event.GetKeyCode() == 79:    # letra o
+            AudioDevice().Show()
+        elif event.GetKeyCode() == 80:    # letra p
+            self.preview(self.listbox.GetStringSelection())
+        elif event.GetKeyCode() == 81:    # letra q
+            self.close()
         else:
             event.Skip()
     
+    def channelsClear(self):
+        for ch in self.channels:
+            if not ch.get_busy():
+                self.channels.remove(ch)
+    
     def playStop(self, sound_obj, flag):
+        self.channelsClear()
         channel_obj = next((ch for ch in self.channels if ch.get_sound() == sound_obj), None)
         if not self.channels or not channel_obj:
             channel = mixer.find_channel()
@@ -139,13 +167,51 @@ class MyFrame(wx.Frame):
                 speak(self.volumes[volume])
             else:
                 speak("Volúmen mínimo")
-
         else:
             speak("Sin reproducción")
-
+    
+    def preview(self, file_name):
+        if not self.is_playing:
+            self.process = subprocess.Popen([ffplay, '-nodisp', f'audios/{file_name}{self.ext}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, creationflags=subprocess.CREATE_NO_WINDOW)
+            speak('Preview activada')
+            self.is_playing = True
+        else:
+            self.process.terminate()
+            self.process.wait()
+            self.is_playing = False
+            speak('Preview desactivada')
     
     def close(self, event=None):
+        dialog = wx.MessageDialog(self, "¿Seguro que quieres salir?", "¡Atención!", wx.YES_NO | wx.ICON_QUESTION)
+        result = dialog.ShowModal()
+        if result == wx.ID_YES:
+            mixer.quit()
+            self.Destroy()
+        dialog.Destroy()
+
+class AudioDevice(wx.Dialog):
+    def __init__(self):
+        super().__init__(parent=None, title='Configuración de audio')
+        panel = wx.Panel(self)
+        
+        static_text = wx.StaticText(panel, label="Selecciona el dispositivo de audio:")
+        static_text.Wrap(-1)
+        
+        self.listbox = wx.ListBox(panel, choices=devices, style=wx.LB_SINGLE)
+        
+        save_button = wx.Button(panel, label='&Aceptar')
+        save_button.Bind(wx.EVT_BUTTON, self.onSave)
+        cancel_button = wx.Button(panel, label='&Cancelar')
+        cancel_button.Bind(wx.EVT_BUTTON, self.onClose)
+    
+    def onSave(self, event):
+        selected_device= self.listbox.GetStringSelection()
         mixer.quit()
+        mixer.init(devicename=selected_device)
+        speak('Dispositivo configurado: {}'.format(selected_device))
+        self.Destroy()
+    
+    def onClose(self, event):
         self.Destroy()
 
 if __name__ == '__main__':
