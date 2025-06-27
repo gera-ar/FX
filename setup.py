@@ -23,6 +23,19 @@ class MyFrame(wx.Frame):
         self.audio_files = []
         self.sounds = []
         self.load_audio_files('audios')
+        self.volumes = {
+            0.0: 'silencio',
+            0.1: '10 porciento',
+            0.2: '20 porciento',
+            0.3: '30 porciento',
+            0.4: '40 porciento',
+            0.5: '50 porciento',
+            0.6: '60 porciento',
+            0.7: '70 porciento',
+            0.8: '80 porciento',
+            0.9: '90 porciento',
+            1.0: 'Volúmen máximo'
+        }
         
         # Añadir ListBox a la ventana
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -49,18 +62,28 @@ class MyFrame(wx.Frame):
 
     def keyPress(self, event):
         sound_obj = self.sounds[self.listbox.GetSelection()]
-        if event.GetKeyCode() == wx.WXK_SPACE:
-            self.playStop(sound_obj)
+        if event.GetKeyCode() == wx.WXK_SPACE or event.GetKeyCode() == 76:
+            flag = -1 if event.GetKeyCode() == 76 else 0
+            self.playStop(sound_obj, flag)
         if event.GetKeyCode() in (wx.WXK_F1, wx.WXK_F2, wx.WXK_F3, wx.WXK_F4):
             self.fade(event.GetKeyCode(), sound_obj)
+        elif event.GetKeyCode() == 65:    # letra a
+            self.currentVolume(sound_obj)
+        elif event.GetKeyCode() == 66:    # letra b
+            self.volumeDown(sound_obj)
+        elif event.GetKeyCode() == 83:    # letra s
+            self.volumeUp(sound_obj)
         else:
+            print(event.GetKeyCode())
             event.Skip()  # Permite que la tecla continúe su acción
     
-    def playStop(self, sound_obj):
+    def playStop(self, sound_obj, flag):
         channel_obj = next((ch for ch in self.channels if ch.get_sound() == sound_obj), None)
         if not self.channels or not channel_obj:
             channel = mixer.find_channel()
-            channel.play(sound_obj)
+            channel.play(sound_obj, loops=flag)
+            if flag == -1:
+                print("Reproducción en loop")
             channel.set_volume(1.0)
             self.channels.append(channel)
         elif channel_obj.get_busy():
@@ -73,7 +96,41 @@ class MyFrame(wx.Frame):
         if channel_obj and channel_obj.get_busy():
             channel_obj.fadeout(durations[key])
             self.channels.remove(channel_obj)
+    
+    def currentVolume(self, sound_obj):
+        channel_obj = next((ch for ch in self.channels if ch.get_sound() == sound_obj), None)
+        if channel_obj:
+            current = round(channel_obj.get_volume(), 1)
+            print(f"En reproducción, volúmen {self.volumes[current]}")
+        else:
+            print("Sin reproducción")
+    
+    def volumeUp(self, sound_obj):
+        channel_obj = next((ch for ch in self.channels if ch.get_sound() == sound_obj), None)
+        if channel_obj and channel_obj.get_volume():
+            if channel_obj.get_volume() < 1.0:
+                volume = round(channel_obj.get_volume() + 0.1, 1)
+                channel_obj.set_volume(volume)
+                print(self.volumes[volume])
+            else:
+                print("Volúmen máximo")
+        else:
+            print("Sin reproducción")
+    
+    def volumeDown(self, sound_obj):
+        channel_obj = next((ch for ch in self.channels if ch.get_sound() == sound_obj), None)
+        if channel_obj and channel_obj.get_volume():
+            if channel_obj.get_volume() > 0.1:
+                volume = round(channel_obj.get_volume() - 0.1, 1)
+                channel_obj.set_volume(volume)
+                print(self.volumes[volume])
+            else:
+                print("Volúmen mínimo")
 
+        else:
+            print("Sin reproducción")
+
+    
     def close(self, event=None):
         mixer.quit()
         self.Destroy()
