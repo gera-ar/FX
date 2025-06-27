@@ -49,7 +49,6 @@ class MyFrame(wx.Frame):
         }
         self.process = None
         self.is_playing = False
-        self.ext = None
         self.load_audio_files('audios')
         
         # Añadir ListBox a la ventana
@@ -73,10 +72,9 @@ class MyFrame(wx.Frame):
         
         self.listbox.Clear()
         self.sounds.clear()
+        self.audio_files.clear()
         
         for filename in os.listdir(folder):
-            if not self.ext:
-                self.ext = '.mp3' if filename.endswith('.mp3') else '.wav'
             if filename.endswith('.mp3') or filename.endswith('.wav'):
                 name, _ = os.path.splitext(filename)
                 self.listbox.Append(name)
@@ -102,7 +100,7 @@ class MyFrame(wx.Frame):
         elif event.GetKeyCode() == 79:    # letra o
             AudioDevice().Show()
         elif event.GetKeyCode() == 80:    # letra p
-            self.preview(self.listbox.GetStringSelection())
+            self.preview(self.listbox.GetSelection())
         elif event.GetKeyCode() == 81:    # letra q
             self.close()
         else:
@@ -170,9 +168,9 @@ class MyFrame(wx.Frame):
         else:
             speak("Sin reproducción")
     
-    def preview(self, file_name):
+    def preview(self, selection):
         if not self.is_playing:
-            self.process = subprocess.Popen([ffplay, '-nodisp', f'audios/{file_name}{self.ext}'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, creationflags=subprocess.CREATE_NO_WINDOW)
+            self.process = subprocess.Popen([ffplay, '-nodisp', self.audio_files[selection]], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, creationflags=subprocess.CREATE_NO_WINDOW)
             speak('Preview activada')
             self.is_playing = True
         else:
