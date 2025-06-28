@@ -4,6 +4,7 @@ import pygame._sdl2.audio as sdl2_audio
 import os
 import ctypes
 import subprocess
+from threading import Thread
 
 # constantes
 nvda = ctypes.WinDLL('_internal/nvda64.dll')
@@ -34,6 +35,7 @@ class MyFrame(wx.Frame):
         self.channels = []
         self.audio_files = []
         self.sounds = []
+        self.playing = []
         self.volumes = {
             0.0: 'silencio',
             0.1: '10 porciento',
@@ -85,7 +87,7 @@ class MyFrame(wx.Frame):
         sound_obj = self.sounds[self.listbox.GetSelection()]
         if event.GetKeyCode() == wx.WXK_SPACE or event.GetKeyCode() == 76:
             flag = -1 if event.GetKeyCode() == 76 else 0
-            self.playStop(sound_obj, flag)
+            self.playStop(sound_obj, self.listbox.GetStringSelection(), flag)
         if event.GetKeyCode() in (wx.WXK_F1, wx.WXK_F2, wx.WXK_F3, wx.WXK_F4):
             self.fade(event.GetKeyCode(), sound_obj)
         elif event.GetKeyCode() == wx.WXK_F5:
@@ -103,16 +105,24 @@ class MyFrame(wx.Frame):
             self.preview(self.listbox.GetSelection())
         elif event.GetKeyCode() == 81:    # letra q
             self.close()
+        elif event.GetKeyCode() == 82:    # letra r
+            string = ", ".join(self.playing) if self.playing else 'Sin reproducciones activas'
+            speak(string)
         else:
             event.Skip()
     
-    def channelsClear(self):
-        for ch in self.channels:
-            if not ch.get_busy():
-                self.channels.remove(ch)
+    def thread(self, channel, file_name):
+        self.playing.append(file_name)
+        while True:
+            if not channel.get_busy():
+                try:
+                    self.playing.remove(file_name)
+                    self.channels.remove(channel)
+                except ValueError:
+                    pass
+                break
     
-    def playStop(self, sound_obj, flag):
-        self.channelsClear()
+    def playStop(self, sound_obj, file_name, flag):
         channel_obj = next((ch for ch in self.channels if ch.get_sound() == sound_obj), None)
         if not self.channels or not channel_obj:
             channel = mixer.find_channel()
@@ -123,9 +133,9 @@ class MyFrame(wx.Frame):
                 speak('Reproduciendo')
             channel.set_volume(1.0)
             self.channels.append(channel)
+            Thread(target=self.thread, args=(channel, file_name), daemon=True).start()
         elif channel_obj.get_busy():
             channel_obj.stop()
-            self.channels.remove(channel_obj)
             speak('Audio detenido')
 
     def fade(self, key, sound_obj):
