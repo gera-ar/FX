@@ -2,59 +2,23 @@
 
 Por [Gera Kessler](http://gera.ar))
 
-Este pequeño programa fue pensado para cubrir una necesidad concreta, y sus funciones están basadas en ello.
-La idea es poder disparar sonidos (fondos musicales o efectos) en obras de teatro o eventos que requieran de sonidos en simultáneo.
-A través de unos pocos atajos de teclado se puede seleccionar el dispositivo de audio de reproducción, reproducir música de fondo, disparar efectos, modificar el volumen, modificar el canal izquierdo o derecho de los efectos, reproducir fondos en loop, y algunas cositas más.
+Este es un sencillo y pequeño programa desarrollado para disparar canciones y efectos de sonido hasta en 8 canales diferentes, con sus respectivos controles de volumen y desvanecimiento.
+La forma de uso recomendada es configurando la salida de sonido de Windows (incluyendo a NVDA) por un lado, y la salida de este programa por otro. De esta manera se obtiene una previsualización de los audios y las verbalizaciones del NVDA solo para el usuario, y la salida del programa hacia el dispositivo externo.
 
-## Uso
+## Atajos de teclado
 
-Lo más importante antes de iniciar el programa, es pegar dentro de las correspondientes carpetas los archivos de audio a utilizar. Los formatos soportados son:
-
-* mp3
-* flac
-* ogg
-* wav
-
-El programa tiene tan solo 2 listas entre las cuales podemos movernos con tabulador.
-En ellas se encuentra la lista de los archivos de cada directorio, los cuales pueden recorrerse con flechas arriba y abajo.
-
-### Atajos de teclado
-
-* Barra espaciadora; inicia la reproducción del archivo seleccionado en la lista
-* p; inicia y detiene la previsualización del archivo seleccionado (reproduce a través del dispositivo por defecto en Windows)
-* 1; inicia la reproducción del archivo en loop (solo lista fondos)
-* q; aumenta el volumen del fondo
-* z; disminuye el volumen del fondo
-* a; detiene la reproducción del fondo con fadeout corto
-* s; detiene la reproducción del fondo con fadeout largo
-* r; verbaliza el tiempo restante del fondo (Solo NVDA)
-* flecha derecha; reproduce los efectos solo por el canal derecho
-* flecha izquierda; reproduce los efectos solo por el canal izquierdo
-* c; reproduce los efectos por ambos canales
+* Flechas arriba y abajo: Mueve el foco por la lista de canciones.
+* Barra espaciadora: Inicia y detiene la reproducción de la canción con el foco.
+* Letra l: Inicia la reproducción en loop de la canción con el foco.
+* Letra e: Verbaliza a través de NVDA el estado de reproducción y el volumen.
+* Letra b: Disminuye el volumen de la canción con el foco (solo en reproducción).
+* Letra s: Aumenta el volumen de la canción con el foco (solo en reproducción).
+* Números alfanuméricos del 1 al 4: Realizan un desvanecimiento del volumen con diferente duración: 1, 2 segundos; 2, 4 segundos; 3, 8 segundos; 4, 16 segundos.
+* Letra p: Inicia y detiene la previsualización de la canción con el foco a través del dispositivo de audio predeterminado del sistema.
+* Letra r: Verbaliza el nombre de las canciones que están en reproducción.
+* F5: Recarga la lista de canciones obtenidas de la carpeta audios.
+* Letra q: Cierra el programa.
 
 ## Configuración de sonido
 
-Generalmente es necesario contar con 2 dispositivos diferentes en la pc para poder dividir el sonido del sistema junto al lector de pantallas, y el sonido de reproducción del programa para evitar accidentes.
-De esta manera al previsualizar un archivo lo hará a través de la configuración por defecto del sistema, y no por la salida del programa.
-
-### Configurar salida del sistema
-
-En Windows podemos seleccionar la salida fácilmente abriendo el menú ejecutar con Windows + r, y escribiendo
-
-    mmsys.cpl
-
-Al pulsar intro tendremos la lista de dispositivos de salida. Al pulsar alt + p sobre el deseado, este quedará marcado como predeterminado.
-
-### Configurar salida de NVDA
-
-En las nuevas versiones del lector de pantallas, el atajo por defecto NVDA + control + u permite seleccionar la salida.
-
-### Configuración de salida principal del programa
-
-Al pulsar la letra o, se abre una interfaz con la lista de dispositivos disponibles.
-Seleccionamos la deseada en la lista y pulsamos en aceptar. O cancelar para salir sin guardar cambios.
-
-Nota:  
-Si con el programa abierto se realizan modificaciones en las carpetas fondos y efectos, estos no se verán reflejados automáticamente. Para ello puede pulsarse f5, que refresca las listas.
-
-Para salir del programa; alt + f4.
+Al pulsar la letra o en la interfaz, se activa un diálogo con una lista de dispositivos de salida a seleccionar. Solo hay que enfocar el deseado y pulsar en el botón Aceptar.
