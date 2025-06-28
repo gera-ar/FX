@@ -8,9 +8,10 @@ import sound_lib
 from sound_lib import output
 from sound_lib import stream
 
+
 # constantes
 nvda = ctypes.WinDLL('_internal/nvda64.dll')
-o = output.Output()
+o=output.Output()
 
 def speak(string):
 	wstr= ctypes.c_wchar_p(string)
