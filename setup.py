@@ -1,25 +1,25 @@
-﻿import wx
+﻿# Por gera Kessler <https:gera.ar>
+
+import wx
 from pygame import mixer
 import pygame._sdl2.audio as sdl2_audio
 import os
 import ctypes
-from threading import Thread
 import sound_lib
 from sound_lib import output
 from sound_lib import stream
 
+mixer.init()
 
 # constantes
 nvda = ctypes.WinDLL('_internal/nvda64.dll')
-o=output.Output()
+o = output.Output()
+devices = sdl2_audio.get_audio_device_names()
 
+# Función que llama a la dll de NVDA
 def speak(string):
 	wstr= ctypes.c_wchar_p(string)
 	nvda.nvdaController_speakText(wstr)
-
-# Inicializar Pygame
-mixer.init()
-devices= sdl2_audio.get_audio_device_names()
 
 class MyApp(wx.App):
     def OnInit(self):
@@ -32,7 +32,6 @@ class MyFrame(wx.Frame):
         super().__init__(parent=None, title='Lista de Reproducción')
         self.panel = wx.Panel(self)
         
-        # Crear ListBox
         self.listbox = wx.ListBox(self.panel)
         
         self.channels = []
@@ -55,19 +54,15 @@ class MyFrame(wx.Frame):
         }
         self.load_audio_files('audios')
         
-        # Añadir ListBox a la ventana
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(self.listbox, 1, wx.EXPAND | wx.ALL, 10)
         self.panel.SetSizer(sizer)
         
-        # Establecer foco en el primer elemento
         if self.listbox.GetCount() > 0:
             self.listbox.SetSelection(0)
         
-        # Bind de teclas
         self.listbox.Bind(wx.EVT_KEY_DOWN, self.keyPress)
         
-        # Bind de cierre
         self.Bind(wx.EVT_CLOSE, self.close)
 
     def load_audio_files(self, folder):
@@ -113,16 +108,12 @@ class MyFrame(wx.Frame):
         else:
             event.Skip()
     
-    def thread(self, channel, file_name):
-        self.playing.append(file_name)
-        while True:
-            if not channel.get_busy():
-                try:
-                    self.playing.remove(file_name)
-                    self.channels.remove(channel)
-                except ValueError:
-                    pass
-                break
+    def check_channel(self, channel, file_name):
+        if not channel.get_busy():
+            self.playing.remove(file_name)
+            self.channels.remove(channel)
+        else:
+            wx.CallLater(500, self.check_channel, channel, file_name)
     
     def playStop(self, sound_obj, file_name, flag):
         channel_obj = next((ch for ch in self.channels if ch.get_sound() == sound_obj), None)
@@ -135,7 +126,8 @@ class MyFrame(wx.Frame):
                 speak('Reproduciendo')
             channel.set_volume(1.0)
             self.channels.append(channel)
-            Thread(target=self.thread, args=(channel, file_name), daemon=True).start()
+            self.playing.append(file_name)
+            self.check_channel(channel, file_name)
         elif channel_obj.get_busy():
             channel_obj.stop()
             speak('Audio detenido')
