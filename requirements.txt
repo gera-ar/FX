@@ -1,3 +1,5 @@
-pygame
-sound-lib
-wxPython
+# Python 3.12.4
+
+pygame==2.6.1
+sound-lib==0.83
+wxPython==4.2.3

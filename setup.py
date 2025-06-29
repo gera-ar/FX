@@ -74,7 +74,7 @@ class MyFrame(wx.Frame):
         self.audio_files.clear()
         
         for filename in os.listdir(folder):
-            if filename.endswith('.mp3') or filename.endswith('.wav'):
+            if filename.lower().endswith(('.mp3', '.wav', '.flac', '.ogg')):
                 name, _ = os.path.splitext(filename)
                 self.listbox.Append(name)
                 self.audio_files.append(os.path.join(folder, filename))
