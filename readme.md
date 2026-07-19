@@ -1,25 +1,52 @@
 ﻿# FX
 
-Por [Gera Kessler](http://gera.ar))
+Por [Gera Kessler](http://gera.ar)  
+Refactorización del código (Gemini)
 
-Este es un sencillo y pequeño programa desarrollado para disparar canciones y efectos de sonido hasta en 8 canales diferentes, con sus respectivos controles de volumen y desvanecimiento.
-Los archivos de audio a utilizar se deben pegar en la carpeta audios, y los formatos soportados son: mp3, wav, flac y ogg.
-La forma de uso recomendada es configurando la salida de sonido de Windows (incluyendo a NVDA) por un lado, y la salida de este programa por otro. De esta manera se obtiene una previsualización de los audios y las verbalizaciones del NVDA solo para el usuario, y la salida del programa hacia el dispositivo externo.
+Este es un programa sencillo y liviano, diseñado para reproducir canciones y efectos de sonido en hasta 8 canales diferentes, con controles de volumen, paneo y desvanecimiento.  
+
+Los archivos de audio deben colocarse en la carpeta **audios**.  
+Los formatos compatibles son: **mp3, wav, flac y ogg**.
+
+---
+
+## Recomendaciones de uso
+
+La forma más práctica de utilizar el programa es configurando la salida de sonido de Windows (incluyendo NVDA) por un lado, y la salida de este programa por otro.  
+De esta manera, el usuario recibe la previsualización de los audios y las verbalizaciones de NVDA, mientras que la salida del programa se dirige al dispositivo externo.  
+
+Se recomienda renombrar los archivos de audio en el orden de preferencia para facilitar su uso en la interfaz.
+
+---
 
 ## Atajos de teclado
 
-* Flechas arriba y abajo: Mueve el foco por la lista de canciones.
-* Barra espaciadora: Inicia y detiene la reproducción de la canción con el foco.
-* Letra l: Inicia la reproducción en loop de la canción con el foco.
-* Letra e: Verbaliza a través de NVDA el estado de reproducción y el volumen.
-* Letra b: Disminuye el volumen de la canción con el foco (solo en reproducción).
-* Letra s: Aumenta el volumen de la canción con el foco (solo en reproducción).
-* Números alfanuméricos del 1 al 4: Realizan un desvanecimiento del volumen con diferente duración: 1, 2 segundos; 2, 4 segundos; 3, 8 segundos; 4, 16 segundos.
-* Letra p: Inicia y detiene la previsualización de la canción con el foco a través del dispositivo de audio predeterminado del sistema.
-* Letra r: Verbaliza el nombre de las canciones que están en reproducción.
-* F5: Recarga la lista de canciones obtenidas de la carpeta audios.
-* Letra q: Cierra el programa.
+### Comandos que afectan solo al archivo de audio con foco en la lista:
+
+- **Barra espaciadora**: Inicia o detiene la reproducción.  
+- **L**: Inicia la reproducción en bucle.  
+- **E**: NVDA verbaliza el estado de reproducción, panorama y volumen actual.  
+- **B**: Disminuye el volumen en un 10% (solo durante la reproducción).  
+- **S**: Aumenta el volumen en un 10% (solo durante la reproducción).  
+- **Números 1 a 4**: Realizan un desvanecimiento con distinta duración:  
+  - 1 → 2 segundos  
+  - 2 → 4 segundos  
+  - 3 → 8 segundos  
+  - 4 → 16 segundos  
+- **P**: Inicia o detiene la previsualización a través del dispositivo de audio predeterminado del sistema.
+
+### Atajos generales:
+
+- **Flechas arriba/abajo**: Mueven el foco por la lista de archivos.  
+- **R**: NVDA verbaliza el nombre de los archivos en reproducción activa.  
+- **F5**: Recarga la lista de archivos desde la carpeta **audios**.  
+- **Q**: Cierra el programa.
+
+---
 
 ## Configuración de sonido
 
-Al pulsar la letra o en la interfaz, se activa un diálogo con una lista de dispositivos de salida a seleccionar. Solo hay que enfocar el deseado y pulsar en el botón Aceptar.
+Al pulsar la tecla **O** en la interfaz, se abre un cuadro de diálogo con la lista de dispositivos de salida disponibles.  
+Solo es necesario seleccionar el dispositivo deseado y pulsar **Aceptar**.  
+
+Se recomienda asignar un dispositivo exclusivo para este programa, evitando que otros programas o el sistema operativo interfieran con la salida de audio.

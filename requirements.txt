@@ -1,5 +1,7 @@
-# Python 3.12.4
+# Python 3.13.5
 
 pygame==2.6.1
 sound-lib==0.83
+sounddevice==0.5.5
+soundfile==0.14.0
 wxPython==4.2.3
