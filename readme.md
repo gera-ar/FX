@@ -21,19 +21,22 @@ Se recomienda renombrar los archivos de audio en el orden de preferencia para fa
 
 ## Atajos de teclado
 
-### Comandos que afectan solo al archivo de audio con foco en la lista:
+### Comandos que afectan solo al archivo de audio con el foco en la lista de la interfaz:
 
 - **Barra espaciadora**: Inicia o detiene la reproducción.  
 - **L**: Inicia la reproducción en bucle.  
 - **E**: NVDA verbaliza el estado de reproducción, panorama y volumen actual.  
 - **B**: Disminuye el volumen en un 10% (solo durante la reproducción).  
 - **S**: Aumenta el volumen en un 10% (solo durante la reproducción).  
+- **A**: Mueve el panorama a la izquierda en un 10% (solo durante la reproducción).  
+- **D**: Mueve el panorama a la derecha en un 10% (solo durante la reproducción).  
+- **C**: Mueve el panorama al centro (solo durante la reproducción).  
+- **P**: Inicia o detiene la previsualización a través del dispositivo de audio predeterminado del sistema.
 - **Números 1 a 4**: Realizan un desvanecimiento con distinta duración:  
   - 1 → 2 segundos  
   - 2 → 4 segundos  
   - 3 → 8 segundos  
   - 4 → 16 segundos  
-- **P**: Inicia o detiene la previsualización a través del dispositivo de audio predeterminado del sistema.
 
 ### Atajos generales:
 
